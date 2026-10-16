@@ -1745,7 +1745,22 @@ button, input, textarea, select {
 .brand-monogram {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
+  letter-spacing: -0.04em;
+  color: var(--text-pure);
+  font-feature-settings: "liga" 0, "calt" 0;
+  font-variant-ligatures: none;
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.brand-monogram .reg-mark {
+  font-size: 0.35em;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-left: 3px;
+  vertical-align: super;
 }
 
 .footer-copyright {
@@ -2686,13 +2701,13 @@ button, input, textarea, select {
   pointer-events: none;
   border-radius: var(--radius-lg);
   background: radial-gradient(
-    circle 420px at var(--glare-x, 50%) var(--glare-y, 50%),
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(0, 240, 255, 0.04) 35%,
+    circle 380px at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.08) 35%,
     transparent 70%
   );
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
   z-index: 10;
 }
 
@@ -2722,16 +2737,19 @@ button, input, textarea, select {
   align-items: center;
   justify-content: center;
   padding: 2px;
-  border-radius: var(--radius-full);
+  border-radius: calc(var(--radius-md) + 2px); /* 14px outer radius for 12px button */
   overflow: hidden;
   background: transparent;
   width: fit-content;
-  box-shadow: 0 4px 22px rgba(0, 240, 255, 0.16);
+  box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.16);
   transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 .moving-border-wrap:hover {
-  box-shadow: 0 6px 30px rgba(0, 240, 255, 0.3);
+  box-shadow: 0 6px 28px rgba(0, 240, 255, 0.32);
   transform: translateY(-2px);
 }
 
@@ -2742,6 +2760,7 @@ button, input, textarea, select {
   left: -150%;
   width: 400%;
   height: 400%;
+  border-radius: inherit;
   background: conic-gradient(
     from 0deg,
     transparent 0 270deg,
@@ -2756,20 +2775,44 @@ button, input, textarea, select {
   position: relative;
   z-index: 1;
   border: none !important;
+  margin: 0 !important;
+  border-radius: var(--radius-md) !important; /* 12px inner radius */
+  box-sizing: border-box;
+}
+
+.hero-actions-row .moving-border-wrap {
+  display: inline-flex;
+  border-radius: calc(var(--radius-md) + 2px);
+  width: auto;
 }
 
 .submit-border-wrap {
   width: 100%;
-  border-radius: var(--radius-sm);
+  display: flex;
+  margin-top: 14px;
+  border-radius: calc(var(--radius-md) + 2px); /* 14px outer radius */
 }
 
 .submit-border-wrap .submit-inquiry-btn {
   width: 100%;
+  margin-top: 0 !important;
+  border-radius: var(--radius-md) !important;
 }
 
 @keyframes spinConicBorder {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-actions-row .moving-border-wrap {
+    width: 100%;
+    display: flex;
+  }
+  .hero-actions-row .moving-border-wrap .btn-hero-primary {
+    width: 100%;
+    justify-content: center;
   }
 }
 

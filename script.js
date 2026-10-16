@@ -376,8 +376,11 @@ document.addEventListener("DOMContentLoaded", () => {
           const centerY = rect.height / 2;
 
           // Max 7 degrees tilt for tasteful editorial 3D depth
-          const rotateX = ((y - centerY) / centerY) * -7;
-          const rotateY = ((x - centerX) / centerX) * 7;
+          const maxTilt = 7;
+          const normY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
+          const normX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
+          const rotateX = normY * -maxTilt;
+          const rotateY = normX * maxTilt;
 
           card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(
             2
