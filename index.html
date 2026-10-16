@@ -58,6 +58,8 @@
     <main id="top">
       <!-- HERO SECTION (RUI Brutalist Editorial Aesthetic) -->
       <section class="hero-section">
+        <!-- EFFECT 1: Aceternity-style Hero Spotlight Sweep -->
+        <div class="spotlight" aria-hidden="true"></div>
         <div class="hero-inner">
           <!-- Left Big Typography Area -->
           <div class="hero-typography">
@@ -69,6 +71,11 @@
 
             <div class="hero-header-line">
               <h1 class="hero-giant-title">ANAS<sup class="reg-mark">®</sup></h1>
+            </div>
+
+            <!-- EFFECT 2: Typewriter Roles (Sourced from Portfolio Content) -->
+            <div class="hero-typewriter-subtitle" aria-label="Professional Specialization">
+              <span class="typewriter-prefix">SPEC // </span><span id="typewriter" class="typewriter-text"></span><span class="caret" aria-hidden="true">|</span>
             </div>
 
             <div class="hero-meta-row">
@@ -89,9 +96,12 @@
 
             <!-- Issue 8 Fix: Prominent Primary Hero CTA Buttons with Preview & Download -->
             <div class="hero-actions-row">
-              <a href="#work" class="btn-hero-primary">
-                Explore Projects <span class="btn-arr">↘</span>
-              </a>
+              <!-- EFFECT 5: Moving Conic Border Gradient Button -->
+              <div class="moving-border-wrap">
+                <a href="#work" class="btn-hero-primary moving-border-inner">
+                  Explore Projects <span class="btn-arr">↘</span>
+                </a>
+              </div>
               <button type="button" class="btn-hero-secondary btn-preview-resume" aria-haspopup="dialog" aria-controls="resume-modal">
                 Preview CV <span class="btn-arr">↗</span>
               </button>
@@ -161,6 +171,9 @@
 
       <!-- ABOUT SECTION (Screenshot 2: "ABOUT ANAS" + Chromatic Silk Mesh Banner) -->
       <section class="about-section" id="about">
+        <!-- EFFECT 3: Subtle Dot Matrix Background Pattern with Radial Vignette Mask -->
+        <div class="section-bg-pattern bg-dots" aria-hidden="true"></div>
+
         <!-- Issue 11 Fix: Responsive, unclipped headline without horizontal distortion -->
         <div class="about-massive-title-wrap">
           <h2 class="massive-headline">ABOUT ANAS</h2>
@@ -180,70 +193,78 @@
           </div>
         </div>
 
-        <!-- About Details Grid -->
-        <div class="about-content-grid">
-          <div class="about-col bio-col">
-            <span class="section-mono-kicker">01 / BIOGRAPHY</span>
-            <h3 class="about-subheading">Design-minded.<br />Engineering-obsessed.</h3>
-            <p class="body-text">
-              I am a Computer Science undergraduate at <strong>Tula’s University, Dehradun</strong> (B.Tech CSE Core, Semester 1 SGPA: 8.52). 
-              My passion lies at the intersection of modern front-end engineering, interactive WebGL/Three.js environments, and machine vision.
-            </p>
-            <p class="body-text">
-              From building smooth 360° GLTF architectural visualizers with zero framework bloat, to deploying real-time pose tracking applications for national hackathons, I obsess over performance, clean architecture, and unforgettable user experiences.
-            </p>
-            
-            <div class="info-meta-list">
-              <div class="meta-item">
-                <span class="meta-label">Location:</span>
-                <span class="meta-val">Dehradun, Uttarakhand, India</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Degree:</span>
-                <span class="meta-val">B.Tech in CSE (Core) &bull; 2023 – Present</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Academic Merit:</span>
-                <span class="meta-val">SGPA 8.52 (Semester 1)</span>
-              </div>
-            </div>
+        <!-- EFFECT 6: Tracing Beam Rail & About Details Grid -->
+        <div class="tracing-beam-wrapper" id="tracing-beam-container">
+          <div class="tracing-beam-rail" aria-hidden="true">
+            <div class="tracing-beam-track"></div>
+            <div class="tracing-beam-glow" id="tracing-beam-glow"></div>
+            <div class="tracing-beam-dot" id="tracing-beam-dot"></div>
           </div>
 
-          <div class="about-col credentials-col">
-            <span class="section-mono-kicker">02 / ACHIEVEMENTS &amp; INVOLVEMENT</span>
-            
-            <div class="credential-cards">
-              <div class="cred-card">
-                <div class="cred-header">
-                  <span class="cred-role">Smart India Hackathon 2026</span>
-                  <span class="cred-date">2026</span>
+          <div class="about-content-grid">
+            <div class="about-col bio-col">
+              <span class="section-mono-kicker">01 / BIOGRAPHY</span>
+              <h3 class="about-subheading">Design-minded.<br />Engineering-obsessed.</h3>
+              <p class="body-text">
+                I am a Computer Science undergraduate at <strong>Tula’s University, Dehradun</strong> (B.Tech CSE Core, Semester 1 SGPA: 8.52). 
+                My passion lies at the intersection of modern front-end engineering, interactive WebGL/Three.js environments, and machine vision.
+              </p>
+              <p class="body-text">
+                From building smooth 360° GLTF architectural visualizers with zero framework bloat, to deploying real-time pose tracking applications for national hackathons, I obsess over performance, clean architecture, and unforgettable user experiences.
+              </p>
+              
+              <div class="info-meta-list">
+                <div class="meta-item">
+                  <span class="meta-label">Location:</span>
+                  <span class="meta-val">Dehradun, Uttarakhand, India</span>
                 </div>
-                <h4 class="cred-title">AI Gym Coach Presentation</h4>
-                <p class="cred-desc">
-                  Built and deployed an end-to-end computer vision posture detection application utilizing MediaPipe, OpenCV, and Groq LLM integration.
-                </p>
+                <div class="meta-item">
+                  <span class="meta-label">Degree:</span>
+                  <span class="meta-val">B.Tech in CSE (Core) &bull; 2023 – Present</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Academic Merit:</span>
+                  <span class="meta-val">SGPA 8.52 (Semester 1)</span>
+                </div>
               </div>
+            </div>
 
-              <div class="cred-card">
-                <div class="cred-header">
-                  <span class="cred-role">AWS Student Builders Group</span>
-                  <span class="cred-date">August 2026</span>
+            <div class="about-col credentials-col">
+              <span class="section-mono-kicker">02 / ACHIEVEMENTS &amp; INVOLVEMENT</span>
+              
+              <div class="credential-cards">
+                <div class="cred-card">
+                  <div class="cred-header">
+                    <span class="cred-role">Smart India Hackathon 2026</span>
+                    <span class="cred-date">2026</span>
+                  </div>
+                  <h4 class="cred-title">AI Gym Coach Presentation</h4>
+                  <p class="cred-desc">
+                    Built and deployed an end-to-end computer vision posture detection application utilizing MediaPipe, OpenCV, and Groq LLM integration.
+                  </p>
                 </div>
-                <h4 class="cred-title">Core Team Applicant</h4>
-                <p class="cred-desc">
-                  Selected applicant contributing to cloud architecture workshops, developer initiatives, and peer code mentorship at Tula's University.
-                </p>
-              </div>
 
-              <div class="cred-card">
-                <div class="cred-header">
-                  <span class="cred-role">QHackathon 2026</span>
-                  <span class="cred-date">May 2026</span>
+                <div class="cred-card">
+                  <div class="cred-header">
+                    <span class="cred-role">AWS Student Builders Group</span>
+                    <span class="cred-date">August 2026</span>
+                  </div>
+                  <h4 class="cred-title">Core Team Applicant</h4>
+                  <p class="cred-desc">
+                    Selected applicant contributing to cloud architecture workshops, developer initiatives, and peer code mentorship at Tula's University.
+                  </p>
                 </div>
-                <h4 class="cred-title">Hackathon Participant</h4>
-                <p class="cred-desc">
-                  Collaborative 24-hour sprint designing rapid prototypes and engineering responsive UI solutions at Tula's Institute, Dehradun.
-                </p>
+
+                <div class="cred-card">
+                  <div class="cred-header">
+                    <span class="cred-role">QHackathon 2026</span>
+                    <span class="cred-date">May 2026</span>
+                  </div>
+                  <h4 class="cred-title">Hackathon Participant</h4>
+                  <p class="cred-desc">
+                    Collaborative 24-hour sprint designing rapid prototypes and engineering responsive UI solutions at Tula's Institute, Dehradun.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -263,6 +284,8 @@
         <div class="projects-editorial-list">
           <!-- PROJECT 01: EstateVision 3D with Live GitHub Pages & Code Links -->
           <article class="project-editorial-item">
+            <!-- EFFECT 4: 3D Tilt Glare Overlay -->
+            <div class="project-tilt-glare" aria-hidden="true"></div>
             <div class="proj-left-visual">
               <div class="visual-housing house-estate">
                 <div class="grid-wireframe" aria-hidden="true"></div>
@@ -323,6 +346,8 @@
 
           <!-- PROJECT 02: AI Gym Coach with Live GitHub Pages & Code Links -->
           <article class="project-editorial-item reverse">
+            <!-- EFFECT 4: 3D Tilt Glare Overlay -->
+            <div class="project-tilt-glare" aria-hidden="true"></div>
             <div class="proj-left-visual">
               <div class="visual-housing house-gym">
                 <div class="scanner-grid" aria-hidden="true"></div>
@@ -387,6 +412,8 @@
 
       <!-- SKILLS / TECHNICAL MATRIX SECTION -->
       <section class="stack-section" id="stack">
+        <!-- EFFECT 3: Architectural Tech Grid Background with Radial Vignette Mask -->
+        <div class="section-bg-pattern bg-grid" aria-hidden="true"></div>
         <div class="section-header-editorial">
           <div>
             <span class="section-mono-kicker">03 / TECHNICAL SPECIFICATIONS</span>
@@ -544,10 +571,12 @@
                   <textarea id="message" name="message" rows="4" placeholder="Tell me about what you are building or the opportunity..." required></textarea>
                 </div>
 
-                <button type="submit" class="submit-inquiry-btn">
-                  <span>SEND INQUIRY</span>
-                  <span class="btn-arrow">↗</span>
-                </button>
+                <div class="moving-border-wrap submit-border-wrap">
+                  <button type="submit" class="submit-inquiry-btn moving-border-inner">
+                    <span>SEND INQUIRY</span>
+                    <span class="btn-arrow">↗</span>
+                  </button>
+                </div>
 
                 <p class="form-status" role="status" aria-live="polite"></p>
               </form>
@@ -559,6 +588,7 @@
 
     <!-- FOOTER (RUI Minimalist Luxury) -->
     <footer class="site-footer">
+      <!-- UI effects inspired by Aceternity UI (ui.aceternity.com) and Skiper UI (skiper-ui.com) -->
       <div class="footer-inner">
         <div class="footer-left">
           <span class="brand-monogram">ANAS®</span>

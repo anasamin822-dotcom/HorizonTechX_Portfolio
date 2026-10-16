@@ -256,5 +256,194 @@ document.addEventListener("DOMContentLoaded", () => {
       closeResumeModal();
     }
   });
+
+  /* -------------------------------------------------------------
+     7. EFFECT 2: TYPEWRITER ROLES (Aceternity UI Homage)
+     ------------------------------------------------------------- */
+  const typewriterElement = document.getElementById("typewriter");
+  if (typewriterElement) {
+    // Sourced strictly from existing portfolio & resume content
+    const words = [
+      "Front-End & 3D Interactive Developer",
+      "Computer Science Undergraduate",
+      "Creative Developer",
+      "Computer Vision AI Engineer"
+    ];
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      typewriterElement.textContent = words[0];
+    } else {
+      let wordIdx = 0;
+      let charIdx = 0;
+      let isDeleting = false;
+      const typeSpeed = 70;
+      const deleteSpeed = 35;
+      const pauseEnd = 1400;
+      const pauseStart = 400;
+
+      function typeLoop() {
+        const currentWord = words[wordIdx];
+
+        if (isDeleting) {
+          typewriterElement.textContent = currentWord.substring(0, charIdx - 1);
+          charIdx--;
+        } else {
+          typewriterElement.textContent = currentWord.substring(0, charIdx + 1);
+          charIdx++;
+        }
+
+        let delay = isDeleting ? deleteSpeed : typeSpeed;
+
+        if (!isDeleting && charIdx === currentWord.length) {
+          delay = pauseEnd;
+          isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+          isDeleting = false;
+          wordIdx = (wordIdx + 1) % words.length;
+          delay = pauseStart;
+        }
+
+        setTimeout(typeLoop, delay);
+      }
+
+      typeLoop();
+    }
+  }
+
+  /* -------------------------------------------------------------
+     8. FLOATING DYNAMIC NAVBAR (Aceternity UI Style)
+     ------------------------------------------------------------- */
+  const siteHeader = document.querySelector(".site-header");
+  if (siteHeader) {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const currentScrollY = window.scrollY;
+            const isMenuOpen = navMenu?.classList.contains("is-open");
+
+            // Add background depth & shadow on scroll
+            if (currentScrollY > 40) {
+              siteHeader.classList.add("nav-scrolled");
+            } else {
+              siteHeader.classList.remove("nav-scrolled");
+            }
+
+            // Hide on scroll down, reveal on scroll up (unless mobile menu is open)
+            if (currentScrollY > 120 && !isMenuOpen) {
+              if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 6) {
+                siteHeader.classList.add("nav-hidden");
+              } else if (lastScrollY - currentScrollY > 6) {
+                siteHeader.classList.remove("nav-hidden");
+              }
+            } else {
+              siteHeader.classList.remove("nav-hidden");
+            }
+
+            lastScrollY = Math.max(0, currentScrollY);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  /* -------------------------------------------------------------
+     9. EFFECT 4: 3D PROJECT TILT CARDS WITH GLARE (Aceternity UI Homage)
+     ------------------------------------------------------------- */
+  const projectCards = document.querySelectorAll(".project-editorial-item");
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  if (projectCards.length && isFinePointer && !prefersReduced) {
+    projectCards.forEach((card) => {
+      let rafId = null;
+
+      card.addEventListener("mousemove", (e) => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          // Max 7 degrees tilt for tasteful editorial 3D depth
+          const rotateX = ((y - centerY) / centerY) * -7;
+          const rotateY = ((x - centerX) / centerX) * 7;
+
+          card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(
+            2
+          )}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`;
+          card.style.setProperty("--glare-x", `${x}px`);
+          card.style.setProperty("--glare-y", `${y}px`);
+        });
+      });
+
+      card.addEventListener("mouseleave", () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        card.style.transform =
+          "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+      });
+    });
+  }
+
+  /* -------------------------------------------------------------
+     10. EFFECT 6: KINETIC TRACING BEAM ON SCROLL (Aceternity UI Homage)
+     ------------------------------------------------------------- */
+  const beamContainer = document.getElementById("tracing-beam-container");
+  const beamGlow = document.getElementById("tracing-beam-glow");
+  const beamDot = document.getElementById("tracing-beam-dot");
+
+  if (beamContainer && beamGlow && beamDot && !prefersReduced) {
+    let beamTicking = false;
+
+    function updateTracingBeam() {
+      const rect = beamContainer.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // Start tracing when container top enters lower viewport (75%), finish when bottom leaves upper viewport (25%)
+      const startTrigger = windowHeight * 0.75;
+
+      const totalDistance = rect.height;
+      const currentScroll = startTrigger - rect.top;
+
+      let progress = currentScroll / totalDistance;
+      progress = Math.min(Math.max(progress, 0), 1);
+
+      const percent = (progress * 100).toFixed(2);
+      beamGlow.style.height = `${percent}%`;
+      beamDot.style.top = `${percent}%`;
+
+      if (progress > 0.02 && progress < 0.99) {
+        beamDot.classList.add("is-active");
+      } else {
+        beamDot.classList.remove("is-active");
+      }
+
+      beamTicking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!beamTicking) {
+          requestAnimationFrame(updateTracingBeam);
+          beamTicking = true;
+        }
+      },
+      { passive: true }
+    );
+
+    // Initial calculation on page load
+    updateTracingBeam();
+  }
 });
 

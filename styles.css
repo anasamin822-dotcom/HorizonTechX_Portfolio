@@ -148,8 +148,20 @@ button, input, textarea, select {
   z-index: 100;
   background: rgba(6, 7, 9, 0.85);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
-  transition: border-color var(--transition-fast);
+  transition: transform 0.35s var(--ease-out-expo), background 0.3s ease, border-color var(--transition-fast), box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.site-header.nav-hidden {
+  transform: translateY(-100%);
+}
+
+.site-header.nav-scrolled {
+  background: rgba(6, 7, 9, 0.95);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 .nav-container {
@@ -2498,3 +2510,367 @@ button, input, textarea, select {
     display: none;
   }
 }
+
+/* ==========================================================================
+   AWWWARDS INTERACTIVE ANIMATIONS & VISUAL UPGRADES
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   EFFECT 1 — Hero Spotlight Sweep (Aceternity UI style)
+   -------------------------------------------------------------------------- */
+.hero-section {
+  overflow: hidden;
+}
+
+.hero-inner,
+.hero-triplet-grid {
+  position: relative;
+  z-index: 2;
+}
+
+.spotlight {
+  position: absolute;
+  top: -80px;
+  left: -8%;
+  width: clamp(380px, 50vw, 720px);
+  height: 140%;
+  background: radial-gradient(
+    ellipse at top left,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(0, 240, 255, 0.12) 28%,
+    rgba(142, 82, 255, 0.06) 48%,
+    transparent 70%
+  );
+  filter: blur(32px);
+  pointer-events: none;
+  transform-origin: top left;
+  z-index: 1;
+  animation: spotlightSweep 1.3s var(--ease-out-expo) forwards;
+}
+
+@keyframes spotlightSweep {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateX(-70px) rotate(-6deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0) rotate(0deg);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight {
+    animation: none;
+    opacity: 0.85;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   EFFECT 2 — Hero: Typewriter Roles (Aceternity UI style)
+   -------------------------------------------------------------------------- */
+.hero-typewriter-subtitle {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: clamp(13px, 1.8vw, 17px);
+  font-weight: 600;
+  margin-top: -6px;
+  margin-bottom: 22px;
+  min-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+.hero-typewriter-subtitle .typewriter-prefix {
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-right: 8px;
+  user-select: none;
+  font-size: 0.9em;
+}
+
+.hero-typewriter-subtitle .typewriter-text {
+  color: var(--accent-cyan);
+  border-bottom: 1px dashed rgba(0, 240, 255, 0.4);
+  padding-bottom: 2px;
+}
+
+.hero-typewriter-subtitle .caret {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--accent-cyan);
+  font-weight: 400;
+  animation: blinkCaret 0.8s infinite;
+}
+
+@keyframes blinkCaret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-typewriter-subtitle .caret {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   EFFECT 3 — Section Backgrounds: Dot & Grid Patterns with Radial Masks
+   -------------------------------------------------------------------------- */
+.about-section,
+.stack-section {
+  position: relative;
+}
+
+.about-section > *:not(.section-bg-pattern),
+.stack-section > *:not(.section-bg-pattern) {
+  position: relative;
+  z-index: 1;
+}
+
+.section-bg-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 35%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 35%, transparent 75%);
+  opacity: 0.75;
+}
+
+.bg-grid {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, #000 30%, transparent 75%);
+  opacity: 0.65;
+}
+
+/* --------------------------------------------------------------------------
+   EFFECT 4 — Projects: 3D Tilt Cards with Glare (Aceternity UI style)
+   -------------------------------------------------------------------------- */
+.project-editorial-item {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.18s ease-out, box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.project-editorial-item .visual-housing {
+  transform-style: preserve-3d;
+  transition: transform 0.22s ease-out;
+  transform: translateZ(30px);
+}
+
+.project-editorial-item .proj-right-info {
+  transform-style: preserve-3d;
+  transition: transform 0.22s ease-out;
+  transform: translateZ(16px);
+}
+
+.project-editorial-item .proj-headline {
+  transform: translateZ(24px);
+}
+
+.project-tilt-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(
+    circle 420px at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(0, 240, 255, 0.04) 35%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.project-editorial-item:hover .project-tilt-glare {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-editorial-item,
+  .project-editorial-item .visual-housing,
+  .project-editorial-item .proj-right-info,
+  .project-editorial-item .proj-headline {
+    transform: none !important;
+    transition: none !important;
+  }
+  .project-tilt-glare {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   EFFECT 5 — CTA Buttons: Moving Conic Border Gradient (Aceternity UI style)
+   -------------------------------------------------------------------------- */
+.moving-border-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: transparent;
+  width: fit-content;
+  box-shadow: 0 4px 22px rgba(0, 240, 255, 0.16);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.moving-border-wrap:hover {
+  box-shadow: 0 6px 30px rgba(0, 240, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.moving-border-wrap::before {
+  content: "";
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 270deg,
+    var(--accent-violet) 315deg,
+    var(--accent-cyan) 360deg
+  );
+  animation: spinConicBorder 3.5s linear infinite;
+  z-index: 0;
+}
+
+.moving-border-wrap .moving-border-inner {
+  position: relative;
+  z-index: 1;
+  border: none !important;
+}
+
+.submit-border-wrap {
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.submit-border-wrap .submit-inquiry-btn {
+  width: 100%;
+}
+
+@keyframes spinConicBorder {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moving-border-wrap::before {
+    animation: none;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+    opacity: 0.55;
+  }
+  .moving-border-wrap:hover {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   EFFECT 6 — About: Kinetic Tracing Beam on Scroll (Aceternity UI style)
+   -------------------------------------------------------------------------- */
+.tracing-beam-wrapper {
+  position: relative;
+  display: flex;
+  gap: 36px;
+  width: 100%;
+}
+
+.tracing-beam-rail {
+  position: relative;
+  width: 16px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tracing-beam-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+}
+
+.tracing-beam-glow {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 0%;
+  background: linear-gradient(
+    to bottom,
+    var(--accent-cyan) 0%,
+    var(--accent-violet) 70%,
+    rgba(255, 42, 133, 0.8) 100%
+  );
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 12px var(--accent-cyan);
+  transition: height 0.08s linear;
+}
+
+.tracing-beam-dot {
+  position: absolute;
+  top: 0%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--text-pure);
+  border: 2px solid var(--accent-cyan);
+  box-shadow: 0 0 14px var(--accent-cyan), 0 0 24px var(--accent-cyan);
+  transition: top 0.08s linear;
+  z-index: 2;
+  opacity: 0;
+}
+
+.tracing-beam-dot.is-active {
+  opacity: 1;
+}
+
+.tracing-beam-wrapper .about-content-grid {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .tracing-beam-rail {
+    display: none;
+  }
+  .tracing-beam-wrapper {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tracing-beam-glow {
+    height: 100% !important;
+    transition: none !important;
+  }
+  .tracing-beam-dot {
+    display: none !important;
+  }
+}
+
+
+
