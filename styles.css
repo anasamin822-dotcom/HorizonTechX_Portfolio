@@ -1065,6 +1065,10 @@ button, input, textarea, select {
   background: radial-gradient(circle at 40% 60%, #0b2326 0%, #040b0e 100%);
 }
 
+.house-frames {
+  background: radial-gradient(circle at 50% 50%, #251026 0%, #07040d 100%);
+}
+
 .grid-wireframe {
   position: absolute;
   inset: 0;
@@ -1083,6 +1087,15 @@ button, input, textarea, select {
                     linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
   background-size: 24px 24px;
   opacity: 0.4;
+}
+
+.gallery-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 42, 133, 0.09) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 42, 133, 0.09) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.45;
 }
 
 .spatial-badge {
@@ -1113,6 +1126,11 @@ button, input, textarea, select {
 .badge-green .dot-cyan {
   background: var(--accent-cyan);
   box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.badge-rose .dot-rose {
+  background: var(--accent-magenta);
+  box-shadow: 0 0 10px var(--accent-magenta);
 }
 
 /* 3D Wireframe Cube Gizmo */
@@ -1253,6 +1271,50 @@ button, input, textarea, select {
   font-size: var(--fs-xs);
   color: var(--text-pure);
   font-style: italic;
+}
+
+/* Mini Gallery Mock for Frames (Pure CSS) */
+.center-gallery-mock {
+  position: relative;
+  z-index: 2;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  gap: 10px;
+  padding: 12px;
+  background: rgba(16, 18, 24, 0.85);
+  border: 1px solid rgba(255, 42, 133, 0.25);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 42, 133, 0.05);
+}
+
+.gallery-tile {
+  width: 50px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.gallery-tile.tile-1 { background: linear-gradient(135deg, #4f1659, #8e2a6d); }
+.gallery-tile.tile-2 {
+  background: linear-gradient(135deg, #ff2a85, #8e52ff);
+  border-color: rgba(255, 42, 133, 0.8);
+  box-shadow: 0 0 12px rgba(255, 42, 133, 0.4);
+}
+.gallery-tile.tile-3 { background: linear-gradient(135deg, #1f2b60, #3d5afe); }
+.gallery-tile.tile-4 { background: linear-gradient(135deg, #0e4b5c, #00f0ff); }
+.gallery-tile.tile-5 { background: linear-gradient(135deg, #591b35, #ff6b8b); }
+.gallery-tile.tile-6 { background: linear-gradient(135deg, #2b1055, #7597de); }
+
+.project-editorial-item:hover .center-gallery-mock .gallery-tile.tile-2 {
+  transform: scale(1.05);
+}
+
+.gallery-pill-preview {
+  border-color: rgba(255, 42, 133, 0.3);
 }
 
 /* Project Right Info */
