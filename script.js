@@ -1,486 +1,216 @@
-/**
- * ANAS® PORTFOLIO — INTERACTION SCRIPTS
- * - Rui-style cursor ink trail simulation ("Move your cursor. Leave a little ink.")
- * - 3D Model Card perspective tilt on mousemove
- * - 3D Render vs Original Photo toggle
- * - Responsive navigation
- * - Contact transmission handler
- */
-
-document.addEventListener("DOMContentLoaded", () => {
-  /* -------------------------------------------------------------
-     1. INK CANVAS TRAIL SIMULATION (Rui Homage)
-     ------------------------------------------------------------- */
-  const canvas = document.getElementById("ink-canvas");
-  if (canvas) {
-    const ctx = canvas.getContext("2d");
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    window.addEventListener("resize", () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const particles = [];
-    const maxParticles = 60;
-
-    class InkDrop {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.size = Math.random() * 8 + 4;
-        this.baseSize = this.size;
-        this.alpha = 0.55;
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 1.2;
-        // Cyan and violet ink tones
-        this.color = Math.random() > 0.4 ? "0, 240, 255" : "142, 82, 255";
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.alpha -= 0.012;
-        this.size += 0.35;
-      }
-
-      draw() {
-        ctx.save();
-        ctx.beginPath();
-        const gradient = ctx.createRadialGradient(
-          this.x,
-          this.y,
-          0,
-          this.x,
-          this.y,
-          this.size
-        );
-        gradient.addColorStop(0, `rgba(${this.color}, ${this.alpha})`);
-        gradient.addColorStop(0.6, `rgba(${this.color}, ${this.alpha * 0.4})`);
-        gradient.addColorStop(1, `rgba(${this.color}, 0)`);
-        ctx.fillStyle = gradient;
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    let lastX = 0;
-    let lastY = 0;
-
-    window.addEventListener("mousemove", (e) => {
-      const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-      if (dist > 8) {
-        particles.push(new InkDrop(e.clientX, e.clientY));
-        if (particles.length > maxParticles) particles.shift();
-        lastX = e.clientX;
-        lastY = e.clientY;
-      }
-    });
-
-    function animateInk() {
-      ctx.clearRect(0, 0, width, height);
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.update();
-        if (p.alpha <= 0) {
-          particles.splice(i, 1);
-        } else {
-          p.draw();
-        }
-      }
-      requestAnimationFrame(animateInk);
-    }
-    animateInk();
-  }
-
-  /* -------------------------------------------------------------
-     2. 3D MODEL CARD PERSPECTIVE TILT
-     ------------------------------------------------------------- */
-  const modelCard = document.getElementById("model-card");
-  if (modelCard && window.matchMedia("(min-width: 1024px)").matches) {
-    const parentContainer = modelCard.parentElement;
-
-    parentContainer.addEventListener("mousemove", (e) => {
-      const rect = modelCard.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      const rotateX = (-y / (rect.height / 2)) * 10;
-      const rotateY = (x / (rect.width / 2)) * 12;
-
-      modelCard.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(
-        2
-      )}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
-    });
-
-    parentContainer.addEventListener("mouseleave", () => {
-      modelCard.style.transform =
-        "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-    });
-  }
-
-  /* -------------------------------------------------------------
-     3. 3D RENDER VS REAL PHOTO TOGGLE
-     ------------------------------------------------------------- */
-  const avatarImg = document.getElementById("hero-avatar-img");
-  const avatarToggle = document.getElementById("avatar-toggle");
-  const tagTitle = document.querySelector(".model-tag-float .tag-title");
-  const modelSpecs = document.querySelector(".mono-specs");
-
-  if (avatarToggle && avatarImg) {
-    const buttons = avatarToggle.querySelectorAll(".switch-btn");
-
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        buttons.forEach((b) => {
-          b.classList.remove("active");
-          b.setAttribute("aria-pressed", "false");
-        });
-        btn.classList.add("active");
-        btn.setAttribute("aria-pressed", "true");
-
-        const type = btn.getAttribute("data-type");
-        avatarImg.style.opacity = "0";
-
-        setTimeout(() => {
-          if (type === "3d") {
-            avatarImg.src = "anas_3d.jpg";
-            if (tagTitle) tagTitle.textContent = "3D DIGITAL TWIN";
-            if (modelSpecs) modelSpecs.textContent = "Three.js / GLTF / GSAP";
-          } else {
-            avatarImg.src = "anas_photo.jpg";
-            if (tagTitle) tagTitle.textContent = "STUDIO PORTRAIT";
-            if (modelSpecs) modelSpecs.textContent = "Dehradun / 2026";
-          }
-          avatarImg.style.opacity = "1";
-        }, 180);
-      });
-    });
-  }
-
-  /* -------------------------------------------------------------
-     4. NAVIGATION TOGGLE (Mobile)
-     ------------------------------------------------------------- */
-  const menuToggle = document.querySelector(".menu-toggle");
-  const navMenu = document.getElementById("nav-menu");
-
-  menuToggle?.addEventListener("click", () => {
-    const isOpen = navMenu.classList.toggle("is-open");
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
-  });
-
-  navMenu?.querySelectorAll(".nav-item").forEach((link) => {
-    link.addEventListener("click", () => {
-      navMenu.classList.remove("is-open");
-      menuToggle?.setAttribute("aria-expanded", "false");
-    });
-  });
-
-  /* -------------------------------------------------------------
-     5. CONTACT / APPOINTMENT TRANSMISSION FORM
-     ------------------------------------------------------------- */
-  const contactForm = document.getElementById("contact-form");
-  const formStatus = document.querySelector(".form-status");
-
-  contactForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const formData = new FormData(contactForm);
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const type = formData.get("type");
-    const message = formData.get("message");
-
-    const subject = encodeURIComponent(`Portfolio Inquiry: ${type} - ${name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nInquiry Type: ${type}\n\nProject Scope & Message:\n${message}`
-    );
-
-    if (formStatus) {
-      formStatus.textContent = "Opening email transmission client…";
-    }
-
-    setTimeout(() => {
-      window.location.href = `mailto:anasamin822@gmail.com?subject=${subject}&body=${body}`;
-      if (formStatus) {
-        formStatus.textContent = "Inquiry ready in client. Thank you, Anas will reply shortly!";
-      }
-    }, 400);
-  });
-
-  /* -------------------------------------------------------------
-     6. RESUME PREVIEW MODAL (ACCESSIBLE IN-BROWSER VIEWER)
-     ------------------------------------------------------------- */
-  const resumeModal = document.getElementById("resume-modal");
-  const resumeFrame = document.getElementById("resume-iframe");
-  const previewButtons = document.querySelectorAll(".btn-preview-resume");
-  const closeButtons = document.querySelectorAll("[data-close-modal]");
-
-  function openResumeModal() {
-    if (!resumeModal) return;
-    if (resumeFrame && resumeFrame.getAttribute("data-src")) {
-      if (resumeFrame.src === "about:blank" || !resumeFrame.src) {
-        resumeFrame.src = resumeFrame.getAttribute("data-src");
-      }
-    }
-    resumeModal.removeAttribute("hidden");
-    document.body.style.overflow = "hidden";
-    const closeBtn = resumeModal.querySelector(".modal-close-btn");
-    closeBtn?.focus();
-  }
-
-  function closeResumeModal() {
-    if (!resumeModal) return;
-    resumeModal.setAttribute("hidden", "");
-    document.body.style.overflow = "";
-  }
-
-  previewButtons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openResumeModal();
-    });
-  });
-
-  closeButtons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      closeResumeModal();
-    });
-  });
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && resumeModal && !resumeModal.hasAttribute("hidden")) {
-      closeResumeModal();
-    }
-  });
-
-  /* -------------------------------------------------------------
-     7. EFFECT 2: TYPEWRITER ROLES (Aceternity UI Homage)
-     ------------------------------------------------------------- */
-  const typewriterElement = document.getElementById("typewriter");
-  if (typewriterElement) {
-    // Sourced strictly from existing portfolio & resume content
-    const words = [
-      "Front-End & 3D Interactive Developer",
-      "Computer Science Undergraduate",
-      "Creative Developer",
-      "Computer Vision AI Engineer"
-    ];
-
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      typewriterElement.textContent = words[0];
-    } else {
-      let wordIdx = 0;
-      let charIdx = 0;
-      let isDeleting = false;
-      const typeSpeed = 70;
-      const deleteSpeed = 35;
-      const pauseEnd = 1400;
-      const pauseStart = 400;
-
-      function typeLoop() {
-        const currentWord = words[wordIdx];
-
-        if (isDeleting) {
-          typewriterElement.textContent = currentWord.substring(0, charIdx - 1);
-          charIdx--;
-        } else {
-          typewriterElement.textContent = currentWord.substring(0, charIdx + 1);
-          charIdx++;
-        }
-
-        let delay = isDeleting ? deleteSpeed : typeSpeed;
-
-        if (!isDeleting && charIdx === currentWord.length) {
-          delay = pauseEnd;
-          isDeleting = true;
-        } else if (isDeleting && charIdx === 0) {
-          isDeleting = false;
-          wordIdx = (wordIdx + 1) % words.length;
-          delay = pauseStart;
-        }
-
-        setTimeout(typeLoop, delay);
-      }
-
-      typeLoop();
-    }
-  }
-
-  /* -------------------------------------------------------------
-     8. FLOATING DYNAMIC NAVBAR (Aceternity UI Style)
-     ------------------------------------------------------------- */
-  const siteHeader = document.querySelector(".site-header");
-  if (siteHeader) {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            const currentScrollY = window.scrollY;
-            const isMenuOpen = navMenu?.classList.contains("is-open");
-
-            // Add background depth & shadow on scroll
-            if (currentScrollY > 40) {
-              siteHeader.classList.add("nav-scrolled");
-            } else {
-              siteHeader.classList.remove("nav-scrolled");
-            }
-
-            // Hide on scroll down, reveal on scroll up (unless mobile menu is open)
-            if (currentScrollY > 120 && !isMenuOpen) {
-              if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 6) {
-                siteHeader.classList.add("nav-hidden");
-              } else if (lastScrollY - currentScrollY > 6) {
-                siteHeader.classList.remove("nav-hidden");
-              }
-            } else {
-              siteHeader.classList.remove("nav-hidden");
-            }
-
-            lastScrollY = Math.max(0, currentScrollY);
-            ticking = false;
-          });
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
-  }
-
-  /* -------------------------------------------------------------
-     9. EFFECT 4: 3D PROJECT TILT CARDS WITH GLARE (Aceternity UI Homage)
-     ------------------------------------------------------------- */
-  const projectCards = document.querySelectorAll(".project-editorial-item");
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-  if (projectCards.length && isFinePointer && !prefersReduced) {
-    projectCards.forEach((card) => {
-      let rafId = null;
-
-      card.addEventListener("mousemove", (e) => {
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-
-          // Max 7 degrees tilt for tasteful editorial 3D depth
-          const maxTilt = 7;
-          const normY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
-          const normX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
-          const rotateX = normY * -maxTilt;
-          const rotateY = normX * maxTilt;
-
-          card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(
-            2
-          )}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`;
-          card.style.setProperty("--glare-x", `${x}px`);
-          card.style.setProperty("--glare-y", `${y}px`);
-        });
-      });
-
-      card.addEventListener("mouseleave", () => {
-        if (rafId) cancelAnimationFrame(rafId);
-        card.style.transform =
-          "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-      });
-    });
-  }
-
-  /* -------------------------------------------------------------
-     10. EFFECT 6: KINETIC TRACING BEAM ON SCROLL (Aceternity UI Homage)
-     ------------------------------------------------------------- */
-  const beamContainer = document.getElementById("tracing-beam-container");
-  const beamGlow = document.getElementById("tracing-beam-glow");
-  const beamDot = document.getElementById("tracing-beam-dot");
-
-  if (beamContainer && beamGlow && beamDot && !prefersReduced) {
-    let beamTicking = false;
-
-    function updateTracingBeam() {
-      const rect = beamContainer.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      // Start tracing when container top enters lower viewport (75%), finish when bottom leaves upper viewport (25%)
-      const startTrigger = windowHeight * 0.75;
-
-      const totalDistance = rect.height;
-      const currentScroll = startTrigger - rect.top;
-
-      let progress = currentScroll / totalDistance;
-      progress = Math.min(Math.max(progress, 0), 1);
-
-      const percent = (progress * 100).toFixed(2);
-      beamGlow.style.height = `${percent}%`;
-      beamDot.style.top = `${percent}%`;
-
-      if (progress > 0.02 && progress < 0.99) {
-        beamDot.classList.add("is-active");
-      } else {
-        beamDot.classList.remove("is-active");
-      }
-
-      beamTicking = false;
-    }
-
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!beamTicking) {
-          requestAnimationFrame(updateTracingBeam);
-          beamTicking = true;
-        }
-      },
-      { passive: true }
-    );
-
-    // Initial calculation on page load
-    updateTracingBeam();
-  }
-});
-
-
-/* Polish layer: scroll progress, reveal on scroll, card spotlight */
+/* ANAS® — THE SERIES · interactions */
 (function () {
-  var bar = document.createElement("div");
-  bar.className = "scroll-progress";
-  document.body.appendChild(bar);
-  var tick = false;
-  function upd() {
-    var h = document.documentElement.scrollHeight - innerHeight;
-    bar.style.transform = "scaleX(" + (h > 0 ? Math.min(scrollY / h, 1) : 0) + ")";
-    tick = false;
-  }
-  addEventListener("scroll", function () { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
-  upd();
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    var els = document.querySelectorAll(".section-header-editorial, .project-editorial-item, .about-section .meta-item, .achievement-card, .stack-section .section-header-editorial");
-    document.documentElement.classList.add("js-reveal");
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-    }, { threshold: 0.08 });
-    els.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
-    // safety: never leave content hidden
-    setTimeout(function () { document.querySelectorAll(".reveal:not(.in)").forEach(function (el) { var r = el.getBoundingClientRect(); if (r.top < innerHeight) el.classList.add("in"); }); }, 1500);
+  /* ---------- Opening sequence ---------- */
+  var opening = document.getElementById('opening');
+  var profiles = document.getElementById('profiles');
+  var entered = false;
+
+  function showProfiles() {
+    if (opening) { opening.classList.add('done'); setTimeout(function () { opening.remove(); }, 950); }
+    if (profiles) { profiles.hidden = false; }
+    document.body.style.overflow = 'hidden';
+  }
+  function enterHome(profileName) {
+    if (entered) return; entered = true;
+    if (profiles) profiles.remove();
+    if (opening && opening.parentNode) { opening.classList.add('done'); setTimeout(function () { opening.remove(); }, 950); }
+    document.body.style.overflow = '';
+    initReveals();
+    if (profileName) toast('Now watching as ' + profileName + ' — enjoy the series.');
   }
 
-  document.querySelectorAll(".project-editorial-item").forEach(function (c) {
-    c.addEventListener("pointermove", function (e) {
-      var r = c.getBoundingClientRect();
-      c.style.setProperty("--mx", e.clientX - r.left + "px");
-      c.style.setProperty("--my", e.clientY - r.top + "px");
+  if (opening) {
+    document.body.style.overflow = 'hidden';
+    var beats = reduced ? [] : [[300, 1], [1900, 2], [2700, 3], [3400, 4], [4300, 5], [5000, 6]];
+    if (reduced) { opening.setAttribute('data-beat', '6'); }
+    beats.forEach(function (b) {
+      setTimeout(function () { opening.setAttribute('data-beat', String(b[1])); }, b[0]);
+    });
+    document.getElementById('opening-play').addEventListener('click', showProfiles);
+    document.getElementById('opening-skip').addEventListener('click', showProfiles);
+    document.addEventListener('keydown', function onKey(e) {
+      if ((e.key === 'Escape' || e.key === 'Enter') && document.getElementById('opening')) showProfiles();
+    });
+  } else { showProfiles(); }
+
+  if (profiles) {
+    profiles.querySelectorAll('.profile-card').forEach(function (card) {
+      card.addEventListener('click', function () { enterHome(card.getAttribute('data-profile')); });
+    });
+  }
+
+
+  if (/[?&]profiles=1/.test(location.search)) { showProfiles(); }
+  if (/[?&]skip=1/.test(location.search)) { enterHome(); }
+  if (/[?&]flat=1/.test(location.search)) {
+    var st = document.createElement('style');
+    st.textContent = '.hero{min-height:940px !important}';
+    document.head.appendChild(st);
+  }
+  var navAvatar = document.getElementById('nav-avatar');
+  if (navAvatar) navAvatar.addEventListener('click', function () { toast('Profile switch — reload to replay the intro.'); });
+
+  /* ---------- Toast ---------- */
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg; toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, 3200);
+  }
+
+  /* ---------- Reveal on scroll ---------- */
+  var revealsDone = false;
+  function initReveals() {
+    if (revealsDone) return; revealsDone = true;
+    var els = document.querySelectorAll('.rv');
+    if (reduced || !('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    document.documentElement.classList.add('reveal-armed');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    els.forEach(function (el, i) {
+      el.style.transitionDelay = (Math.min(i % 4, 3) * 70) + 'ms';
+      io.observe(el);
+    });
+    setTimeout(function () {
+      document.querySelectorAll('.rv:not(.in)').forEach(function (el) {
+        if (el.getBoundingClientRect().top < innerHeight) el.classList.add('in');
+      });
+    }, 1600);
+    setTimeout(function () {
+      document.querySelectorAll('.rv:not(.in)').forEach(function (el) { el.classList.add('in'); });
+    }, 4000);
+  }
+
+  /* ---------- Nav behavior + scrollspy ---------- */
+  var nav = document.getElementById('nav');
+  var lastY = window.scrollY, navTick = false;
+  window.addEventListener('scroll', function () {
+    if (navTick) return; navTick = true;
+    requestAnimationFrame(function () {
+      var y = window.scrollY;
+      nav.classList.toggle('scrolled', y > 40);
+      if (y > 140 && y > lastY + 6 && !document.getElementById('nav-links').classList.contains('open')) nav.classList.add('hidden-up');
+      else if (lastY - y > 6 || y <= 140) nav.classList.remove('hidden-up');
+      lastY = y; navTick = false;
+    });
+  }, { passive: true });
+
+  var spy = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var id = e.target.id;
+      document.querySelectorAll('.nav-link').forEach(function (l) {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+      });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  ['continue', 'originals', 'picks', 'about', 'skills', 'contact'].forEach(function (id) {
+    var s = document.getElementById(id); if (s) spy.observe(s);
+  });
+
+  /* ---------- Mobile menu ---------- */
+  var burger = document.getElementById('nav-burger');
+  var navLinks = document.getElementById('nav-links');
+  if (burger && navLinks) {
+    burger.addEventListener('click', function () {
+      var open = navLinks.classList.toggle('open');
+      burger.setAttribute('aria-expanded', String(open));
+    });
+    navLinks.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { navLinks.classList.remove('open'); });
+    });
+  }
+
+  /* ---------- Rail buttons ---------- */
+  document.querySelectorAll('.rail-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var rail = document.getElementById(btn.getAttribute('data-rail'));
+      if (!rail) return;
+      var dir = parseInt(btn.getAttribute('data-dir'), 10);
+      rail.scrollBy({ left: dir * Math.min(rail.clientWidth * 0.85, 640), behavior: 'smooth' });
     });
   });
+
+  /* ---------- Hero card tilt + parallax chips ---------- */
+  var heroCard = document.getElementById('hero-card');
+  var heroVisual = document.getElementById('hero-visual');
+  if (heroCard && heroVisual && finePointer && !reduced) {
+    heroVisual.addEventListener('mousemove', function (e) {
+      var r = heroCard.getBoundingClientRect();
+      var x = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+      var y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+      heroCard.style.transform = 'perspective(1000px) rotateX(' + (-y * 7).toFixed(2) + 'deg) rotateY(' + (x * 9).toFixed(2) + 'deg)';
+    });
+    heroVisual.addEventListener('mouseleave', function () { heroCard.style.transform = ''; });
+  }
+
+  /* ---------- Magnetic buttons ---------- */
+  if (finePointer && !reduced) {
+    document.querySelectorAll('.magnetic').forEach(function (el) {
+      el.addEventListener('mousemove', function (e) {
+        var r = el.getBoundingClientRect();
+        var x = e.clientX - r.left - r.width / 2;
+        var y = e.clientY - r.top - r.height / 2;
+        el.style.transform = 'translate(' + (x * 0.22).toFixed(1) + 'px,' + (y * 0.28).toFixed(1) + 'px)';
+      });
+      el.addEventListener('mouseleave', function () {
+        el.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1)';
+        el.style.transform = '';
+        setTimeout(function () { el.style.transition = ''; }, 500);
+      });
+    });
+  }
+
+  /* ---------- Custom cursor ---------- */
+  var dot = document.getElementById('cursor-dot');
+  var ring = document.getElementById('cursor-ring');
+  if (dot && ring && finePointer && !reduced) {
+    document.body.classList.add('has-cursor');
+    var rx = -100, ry = -100, tx = -100, ty = -100;
+    document.addEventListener('mousemove', function (e) {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.opacity = '1'; ring.style.opacity = '1';
+      dot.style.transform = 'translate(' + (tx - 4) + 'px,' + (ty - 4) + 'px)';
+    });
+    (function loop() {
+      rx += (tx - rx) * 0.16; ry += (ty - ry) * 0.16;
+      ring.style.transform = 'translate(' + (rx - 17) + 'px,' + (ry - 17) + 'px)';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a, button, .poster, .cw-card').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { ring.classList.add('grow'); });
+      el.addEventListener('mouseleave', function () { ring.classList.remove('grow'); });
+    });
+  } else {
+    if (dot) dot.style.display = 'none';
+    if (ring) ring.style.display = 'none';
+  }
+
+  /* ---------- Resume modal ---------- */
+  var modal = document.getElementById('resume-modal');
+  var frame = document.getElementById('resume-frame');
+  function openModal() {
+    modal.hidden = false;
+    if (frame && frame.src !== frame.getAttribute('data-src')) frame.src = frame.getAttribute('data-src');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    modal.hidden = true;
+    if (frame) frame.src = 'about:blank';
+    document.body.style.overflow = entered ? '' : 'hidden';
+  }
+  document.querySelectorAll('.btn-open-resume').forEach(function (b) { b.addEventListener('click', openModal); });
+  modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
 })();
