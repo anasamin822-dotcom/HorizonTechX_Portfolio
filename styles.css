@@ -2979,3 +2979,19 @@ button, input, textarea, select {
 
 
 
+
+.proj-shot { width: 100%; height: 100%; min-height: 0; object-fit: contain; object-position: center; display: block; }
+@media (max-width: 768px) { .proj-shot { min-height: 300px; object-fit: cover; object-position: 12% top; } }
+/* ---- Polish layer: scroll progress, reveal, card spotlight, button shine ---- */
+.scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #8e52ff, #00f0ff); z-index: 9999; pointer-events: none; }
+.js-reveal .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.js-reveal .reveal.in { opacity: 1; transform: none; }
+.project-editorial-item { --mx: 50%; --my: 50%; position: relative; }
+.project-editorial-item::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: 0; transition: opacity .3s; background: radial-gradient(500px circle at var(--mx) var(--my), rgba(142,82,255,.14), transparent 45%); }
+.project-editorial-item:hover::after { opacity: 1; }
+.proj-shot { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.project-editorial-item:hover .proj-shot { transform: scale(1.03); }
+.cta-link-btn { position: relative; overflow: hidden; }
+.cta-link-btn::before { content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); transition: left .6s; }
+.cta-link-btn:hover::before { left: 140%; }
+@media (prefers-reduced-motion: reduce) { .js-reveal .reveal { opacity: 1; transform: none; transition: none; } .scroll-progress { display: none; } }

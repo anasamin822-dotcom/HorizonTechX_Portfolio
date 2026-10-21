@@ -450,3 +450,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
+/* Polish layer: scroll progress, reveal on scroll, card spotlight */
+(function () {
+  var bar = document.createElement("div");
+  bar.className = "scroll-progress";
+  document.body.appendChild(bar);
+  var tick = false;
+  function upd() {
+    var h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = "scaleX(" + (h > 0 ? Math.min(scrollY / h, 1) : 0) + ")";
+    tick = false;
+  }
+  addEventListener("scroll", function () { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
+  upd();
+
+  if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var els = document.querySelectorAll(".section-header-editorial, .project-editorial-item, .about-section .meta-item, .achievement-card, .stack-section .section-header-editorial");
+    document.documentElement.classList.add("js-reveal");
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    els.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+    // safety: never leave content hidden
+    setTimeout(function () { document.querySelectorAll(".reveal:not(.in)").forEach(function (el) { var r = el.getBoundingClientRect(); if (r.top < innerHeight) el.classList.add("in"); }); }, 1500);
+  }
+
+  document.querySelectorAll(".project-editorial-item").forEach(function (c) {
+    c.addEventListener("pointermove", function (e) {
+      var r = c.getBoundingClientRect();
+      c.style.setProperty("--mx", e.clientX - r.left + "px");
+      c.style.setProperty("--my", e.clientY - r.top + "px");
+    });
+  });
+})();
